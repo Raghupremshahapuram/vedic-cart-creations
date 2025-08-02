@@ -94,17 +94,17 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-sacred" />
-                <span className="text-primary-foreground/80">+91 98765 43210</span>
+                <span className="text-primary-foreground/80">+91 91234 56789</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-sacred" />
-                <span className="text-primary-foreground/80">hello@cowproducts.com</span>
+                <span className="text-primary-foreground/80">hello@gamil.com</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="w-4 h-4 text-sacred mt-1" />
                 <span className="text-primary-foreground/80">
                   123 Village Road,<br />
-                  Sacred Valley, India 123456
+                  , India 123456
                 </span>
               </div>
             </div>
