@@ -121,7 +121,7 @@ const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => navigate('/auth')}>
+                <DropdownMenuItem onClick={() => navigate('/Signup')}>
                   Login / Sign Up
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate('/account')}>
