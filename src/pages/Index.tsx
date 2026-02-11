@@ -10,7 +10,7 @@ import heroImage from '@/assets/hero-bg.jpg';
 import a2GheeImage from '@/assets/a2-ghee.jpg';
 import cowDungDiyasImage from '@/assets/cow-dung-diyas.jpg';
 import naturalIncenseImage from '@/assets/natural-incense.jpg';
-import soapImage from '@/assets/soap.png';
+import soapImage from '@/assets/Soap.png';
 
 
 const Index = () => {
