@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, Grid3X3, List, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -10,9 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/contexts/CartContext';
-import a2GheeImage from '@/assets/a2-ghee.jpg';
-import cowDungDiyasImage from '@/assets/cow-dung-diyas.jpg';
-import naturalIncenseImage from '@/assets/natural-incense.jpg';
 
 const Products = () => {
   const [searchParams] = useSearchParams();
@@ -21,93 +17,59 @@ const Products = () => {
   const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('featured');
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample products data
-  const allProducts: Product[] = [
-    {
-      id: '1',
-      name: 'Organic A2 Ghee - 500ml',
-      price: 899,
-      image: a2GheeImage,
-      category: 'Dairy',
-      description: 'Pure A2 ghee made from grass-fed cow milk using traditional bilona method.',
-      badges: ['Organic', 'A2 Quality'],
-      inStock: true
-    },
-    {
-      id: '2',
-      name: 'Handmade Cow Dung Diyas (Set of 10)',
-      price: 299,
-      image: cowDungDiyasImage,
-      category: 'Home Decor',
-      description: 'Traditional handcrafted diyas made from pure cow dung for festivals.',
-      badges: ['Handmade', 'Eco-Friendly'],
-      inStock: true
-    },
-    {
-      id: '3',
-      name: 'Natural Incense Sticks - Sandalwood',
-      price: 199,
-      image: naturalIncenseImage,
-      category: 'Wellness',
-      description: 'Premium natural incense sticks made with pure sandalwood and herbs.',
-      badges: ['Natural', 'Aromatherapy'],
-      inStock: true
-    },
-    {
-      id: '4',
-      name: 'Organic A2 Ghee - 1kg',
-      price: 1699,
-      image: a2GheeImage,
-      category: 'Dairy',
-      description: 'Large pack of pure A2 ghee for families.',
-      badges: ['Organic', 'A2 Quality', 'Family Pack'],
-      inStock: true
-    },
-    {
-      id: '5',
-      name: 'Cow Dung Cakes (Set of 20)',
-      price: 199,
-      image: cowDungDiyasImage,
-      category: 'Eco-Friendly',
-      description: 'Natural cow dung cakes for traditional cooking and ceremonies.',
-      badges: ['Natural', 'Eco-Friendly'],
-      inStock: false
-    },
-    {
-      id: '6',
-      name: 'Lavender Incense Sticks',
-      price: 249,
-      image: naturalIncenseImage,
-      category: 'Wellness',
-      description: 'Calming lavender incense for relaxation and meditation.',
-      badges: ['Natural', 'Aromatherapy', 'Relaxation'],
-      inStock: true
-    }
-  ];
+  // ✅ Fetch from backend on mount
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/products/")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const formatted = data.map(p => ({
+            id: p.id.toString(),
+            name: p.name,
+            price: parseFloat(p.price),
+            image: p.image,
+            category: p.category,
+            description: p.description,
+            badges: [], // Backend doesn't send badges yet
+            inStock: p.stock > 0
+          }));
+          setAllProducts(formatted);
+        } else {
+          console.error("Unexpected API response", data);
+        }
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching products:", err);
+        setLoading(false);
+      });
+  }, []);
 
-  const categories = ['Dairy', 'Home Decor', 'Wellness', 'Eco-Friendly'];
+  // Get unique categories from backend
+  const categories = useMemo(() => {
+    return Array.from(new Set(allProducts.map(p => p.category))).filter(Boolean);
+  }, [allProducts]);
 
-  // Filter and sort products
+  // ✅ Filter and sort
   const filteredProducts = useMemo(() => {
     const searchQuery = searchParams.get('search') || '';
-    
     let filtered = allProducts.filter(product => {
-      // Search filter
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      // Category filter
-      const matchesCategory = selectedCategories.length === 0 || 
-                             selectedCategories.includes(product.category);
-      
-      // Price filter
-      const matchesPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
-      
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const matchesCategory =
+        selectedCategories.length === 0 || selectedCategories.includes(product.category);
+
+      const matchesPrice =
+        product.price >= priceRange[0] && product.price <= priceRange[1];
+
       return matchesSearch && matchesCategory && matchesPrice;
     });
 
-    // Sort products
     switch (sortBy) {
       case 'price-low':
         filtered.sort((a, b) => a.price - b.price);
@@ -118,7 +80,7 @@ const Products = () => {
       case 'name':
         filtered.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      default: // featured
+      default:
         break;
     }
 
@@ -127,9 +89,9 @@ const Products = () => {
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     if (checked) {
-      setSelectedCategories([...selectedCategories, category]);
+      setSelectedCategories(prev => [...prev, category]);
     } else {
-      setSelectedCategories(selectedCategories.filter(c => c !== category));
+      setSelectedCategories(prev => prev.filter(c => c !== category));
     }
   };
 
@@ -144,7 +106,7 @@ const Products = () => {
           </p>
         </div>
 
-        {/* Filters and Sort */}
+        {/* Filters + Content */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Filters */}
           <div className={`lg:w-72 ${showFilters ? 'block' : 'hidden lg:block'}`}>
@@ -165,7 +127,7 @@ const Products = () => {
                         <Checkbox
                           id={category}
                           checked={selectedCategories.includes(category)}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked) =>
                             handleCategoryChange(category, checked as boolean)
                           }
                         />
@@ -197,8 +159,8 @@ const Products = () => {
                 </div>
 
                 {/* Clear Filters */}
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setSelectedCategories([]);
                     setPriceRange([0, 2000]);
@@ -225,7 +187,7 @@ const Products = () => {
                   <SlidersHorizontal className="w-4 h-4 mr-2" />
                   Filters
                 </Button>
-                
+
                 <Badge variant="secondary">
                   {filteredProducts.length} products found
                 </Badge>
@@ -267,16 +229,20 @@ const Products = () => {
               </div>
             </div>
 
-            {/* Products Grid */}
-            {filteredProducts.length > 0 ? (
-              <div className={`grid gap-6 ${
-                viewMode === 'grid' 
-                  ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
-                  : 'grid-cols-1'
-              }`}>
+            {/* Products */}
+            {loading ? (
+              <div className="text-center py-12">Loading products...</div>
+            ) : filteredProducts.length > 0 ? (
+              <div
+                className={`grid gap-6 ${
+                  viewMode === 'grid'
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                    : 'grid-cols-1'
+                }`}
+              >
                 {filteredProducts.map(product => (
-                  <ProductCard 
-                    key={product.id} 
+                  <ProductCard
+                    key={product.id}
                     product={product}
                     className={viewMode === 'list' ? 'flex-row' : ''}
                   />
@@ -289,7 +255,7 @@ const Products = () => {
                 <p className="text-muted-foreground mb-4">
                   Try adjusting your filters or search terms
                 </p>
-                <Button 
+                <Button
                   onClick={() => {
                     setSelectedCategories([]);
                     setPriceRange([0, 2000]);

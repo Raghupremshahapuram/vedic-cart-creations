@@ -14,6 +14,8 @@ import Checkout from "./pages/Checkout";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import NotFound from "./pages/NotFound";
 import Signup from "./pages/Signup";
+import RequireAuth from "./components/RequireAuth";
+import MyAccount from "./pages/MyAccount";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +34,9 @@ const App = () => (
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
+                {/* <Route path="/checkout" element={<Checkout />} /> */}
+                <Route path="/checkout" element={ <RequireAuth>   <Checkout /> </RequireAuth>} />
+                <Route path="/account" element={ <RequireAuth>   <MyAccount /> </RequireAuth>} />
                 <Route path="/payment-success" element={<PaymentSuccess />} />
                 <Route path="/Signup" element={<Signup/>}/>
           

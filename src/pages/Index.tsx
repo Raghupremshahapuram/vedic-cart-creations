@@ -10,6 +10,8 @@ import heroImage from '@/assets/hero-bg.jpg';
 import a2GheeImage from '@/assets/a2-ghee.jpg';
 import cowDungDiyasImage from '@/assets/cow-dung-diyas.jpg';
 import naturalIncenseImage from '@/assets/natural-incense.jpg';
+import soapImage from '@/assets/soap.png';
+
 
 const Index = () => {
   // Sample products for featured section
@@ -17,7 +19,7 @@ const Index = () => {
     {
       id: '1',
       name: 'Organic A2 Ghee - 500ml',
-      price: 899,
+      price: 599,
       image: a2GheeImage,
       category: 'Dairy',
       description: 'Pure A2 ghee made from grass-fed cow milk using traditional bilona method.',
@@ -27,7 +29,7 @@ const Index = () => {
     {
       id: '2',
       name: 'Handmade Cow Dung Diyas (Set of 10)',
-      price: 299,
+      price: 99,
       image: cowDungDiyasImage,
       category: 'Home Decor',
       description: 'Traditional handcrafted diyas made from pure cow dung for festivals.',
@@ -37,13 +39,24 @@ const Index = () => {
     {
       id: '3',
       name: 'Natural Incense Sticks - Sandalwood',
-      price: 199,
+      price: 99,
       image: naturalIncenseImage,
       category: 'Wellness',
       description: 'Premium natural incense sticks made with pure sandalwood and herbs.',
       badges: ['Natural', 'Aromatherapy'],
       inStock: true
+    },
+    {
+      id: '4',
+      name: 'Natural Herbal Soap',
+      price: 79,
+      image: soapImage,
+      category: 'Wellness',
+      description: 'Handmade soap with Multani Mitti, Cow Dung & Orange Essence. Natural skin care.',
+      badges: ['Herbal', 'Eco-Friendly'],
+      inStock: true
     }
+    
   ];
 
   const categories = [
@@ -112,7 +125,7 @@ const Index = () => {
             </Link>
             
             <Link to="/about">
-              <Button variant="outline" size="lg" className="rounded-2xl px-8 py-6 text-lg border-white/30 text-white hover:bg-white/10">
+              <Button variant="outline" size="lg" className="rounded-2xl px-8 py-6 text-lg bg-gradient-to-r from-sacred to-accent hover:from-sacred/90 hover:to-accent/90 text-sacred-foreground">
                 Learn More
               </Button>
             </Link>
